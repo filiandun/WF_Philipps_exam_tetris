@@ -12,8 +12,14 @@ namespace Tetris
 {
     public abstract class Block
     {
-        public Point[] currentPositions;
+        public byte[,] blockMatrix;
         public byte currentOrientation;
+
+        public byte currentX;
+        public byte currentY;
+
+        //public byte previousX;
+        //public byte previousY;
 
         public Block() { }
     }
@@ -28,15 +34,20 @@ namespace Tetris
     {
         public TBlock()
         {
+            this.currentX = 4;
+            this.currentY = 0;
+
+            //this.previousX = currentX;
+            //this.previousY = currentY;
+
             this.currentOrientation = 5;
 
-            this.currentPositions = new Point[4]
+            this.blockMatrix = new byte[3, 3];
+            for (int i = 0; i < 3; i++)
             {
-                new Point(171, 24),
-                new Point(141, 54),
-                new Point(171, 54),
-                new Point(201, 54)
-            };
+                this.blockMatrix[1, i] = 2;
+            }
+            this.blockMatrix[0, 1] = 2;
         }
     }
 
@@ -46,126 +57,126 @@ namespace Tetris
      *    [2][3]   *
     ****************/
 
-    public class OBlock : Block
-    {
-        public OBlock()
-        {
-            this.currentPositions = new Point[4]
-            {
-                new Point(141, 24),
-                new Point(171, 24),
-                new Point(141, 54),
-                new Point(171, 54)
-            };
-        }
-    }
+    //public class OBlock : Block
+    //{
+    //    public OBlock()
+    //    {
+    //        this.matrixsBlock = new Point[4]
+    //        {
+    //            new Point(141, 24),
+    //            new Point(171, 24),
+    //            new Point(141, 54),
+    //            new Point(171, 54)
+    //        };
+    //    }
+    //}
 
 
-    /****************
-     *     [2][3]  *
-     *  [0][1]     *
-    ****************/
+    ///****************
+    // *     [2][3]  *
+    // *  [0][1]     *
+    //****************/
 
-    public class SBlock : Block
-    {
-        public SBlock()
-        {
-            this.currentOrientation = 5;
+    //public class SBlock : Block
+    //{
+    //    public SBlock()
+    //    {
+    //        this.currentOrientation = 5;
 
-            this.currentPositions = new Point[4]
-            {
-                new Point(111, 54),
-                new Point(141, 54),
-                new Point(141, 24),
-                new Point(171, 24)
-            };
-        }
-    }
-
-
-    /****************
-     *  [0][1]     *
-     *     [2][3]  *
-    ****************/
-
-    public class ZBlock : Block
-    {
-
-        public ZBlock()
-        {
-            this.currentOrientation = 5;
-
-            this.currentPositions = new Point[4]
-            {
-                new Point(111, 24),
-                new Point(141, 24),
-                new Point(141, 54),
-                new Point(171, 54)
-            };
-        }
-    }
+    //        this.matrixsBlock = new Point[4]
+    //        {
+    //            new Point(111, 54),
+    //            new Point(141, 54),
+    //            new Point(141, 24),
+    //            new Point(171, 24)
+    //        };
+    //    }
+    //}
 
 
-    /****************
-     *  [0]        *
-     *  [1][2][3]  *
-    ****************/
+    ///****************
+    // *  [0][1]     *
+    // *     [2][3]  *
+    //****************/
 
-    public class JBlock : Block
-    {
-        public JBlock()
-        {
-            this.currentOrientation = 5;
+    //public class ZBlock : Block
+    //{
 
-            this.currentPositions = new Point[4]
-            {
-                new Point(111, 24),
-                new Point(111, 54),
-                new Point(141, 54),
-                new Point(171, 54)
-            };
-        }
-    }
+    //    public ZBlock()
+    //    {
+    //        this.currentOrientation = 5;
 
-    /****************
-     *        [3]  *
-     *  [0][1][2]  *
-    ****************/
-
-    public class LBlock : Block
-    {
-        public LBlock()
-        {
-            this.currentOrientation = 5;
-
-            this.currentPositions = new Point[4]
-            {
-                new Point(111, 54),
-                new Point(141, 54),
-                new Point(171, 54),
-                new Point(171, 24)
-            };
-        }
-    }
+    //        this.matrixsBlock = new Point[4]
+    //        {
+    //            new Point(111, 24),
+    //            new Point(141, 24),
+    //            new Point(141, 54),
+    //            new Point(171, 54)
+    //        };
+    //    }
+    //}
 
 
-    /*****************
-     * [0][1][2][3] *
-    *****************/
+    ///****************
+    // *  [0]        *
+    // *  [1][2][3]  *
+    //****************/
 
-    public class IBlock : Block
-    {
-        public IBlock()
-        {
-            this.currentOrientation = 5;
+    //public class JBlock : Block
+    //{
+    //    public JBlock()
+    //    {
+    //        this.currentOrientation = 5;
 
-            this.currentPositions = new Point[4]
-            {
-                new Point(111, 24),
-                new Point(141, 24),
-                new Point(171, 24),
-                new Point(201, 24)
-            };
-        }
-    }
+    //        this.matrixsBlock = new Point[4]
+    //        {
+    //            new Point(111, 24),
+    //            new Point(111, 54),
+    //            new Point(141, 54),
+    //            new Point(171, 54)
+    //        };
+    //    }
+    //}
+
+    ///****************
+    // *        [3]  *
+    // *  [0][1][2]  *
+    //****************/
+
+    //public class LBlock : Block
+    //{
+    //    public LBlock()
+    //    {
+    //        this.currentOrientation = 5;
+
+    //        this.matrixsBlock = new Point[4]
+    //        {
+    //            new Point(111, 54),
+    //            new Point(141, 54),
+    //            new Point(171, 54),
+    //            new Point(171, 24)
+    //        };
+    //    }
+    //}
+
+
+    ///*****************
+    // * [0][1][2][3] *
+    //*****************/
+
+    //public class IBlock : Block
+    //{
+    //    public IBlock()
+    //    {
+    //        this.currentOrientation = 5;
+
+    //        this.matrixsBlock = new Point[4]
+    //        {
+    //            new Point(111, 24),
+    //            new Point(141, 24),
+    //            new Point(171, 24),
+    //            new Point(201, 24)
+    //        };
+    //    }
+    //}
 }

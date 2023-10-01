@@ -18,28 +18,10 @@ namespace Tetris
             InitializeComponent();
         }
 
-        private async void buttonStart_Click(object sender, EventArgs e)
+        private void buttonStart_Click(object sender, EventArgs e)
         {
             Game game = new Game();
             game.Show();
-
-            //for (int j = 0; j < 20; j++)
-            //{
-            //    for (int i = 0; i < 4; i++)
-            //    {
-            //        PictureBox pictureBoxBlock = new PictureBox()
-            //        {
-            //            Image = Properties.Resources.Block,
-            //            Size = new Size(30, 30),
-            //            Location = game.currentBlock.currentPositions[i],
-            //            BackColor = Color.FromArgb(0, 0, 0, 0) // чтобы фон был прозрачным у pictureBox
-            //        };
-
-            //        game.Controls.Add(pictureBoxBlock);
-            //    }
-
-            //    game.Controls.Clear();
-            //}
         }
     }
 }

@@ -17,10 +17,7 @@ namespace Tetris
     {
         Random random = new Random(DateTime.Now.Millisecond);
 
-        const byte WIDTH = 20;
-        const byte HEIGHT = 20;
-
-        public bool[,] gameField;
+        public GameField gameField;
 
         public Block currentBlock;
         public Block nextBlock;
@@ -29,19 +26,8 @@ namespace Tetris
         {
             InitializeComponent();
 
-            this.gameField = new bool[WIDTH, HEIGHT]; // заполнение поля
-            for (int i = 0; i < WIDTH; i++) 
-            {
-                for (int j = 0; j < HEIGHT; j++)
-                {
-                    this.gameField[i, j] = true;
-                }
-            }
-
-            this.Paint += new PaintEventHandler(DrawColoredSquare);
-
             //this.currentBlock = new OBlock(); // READY
-            //this.currentBlock = new TBlock(); // READY
+            this.currentBlock = new TBlock();
             //this.currentBlock = new SBlock(); // READY
             //this.currentBlock = new ZBlock(); // READY
             //this.currentBlock = new JBlock(); // READY
@@ -49,6 +35,7 @@ namespace Tetris
             //this.currentBlock = new IBlock(); // READY
 
             //this.Random_Block();
+            this.gameField = new GameField();
         }
 
         private void Game_Load(object sender, EventArgs e)
@@ -56,98 +43,135 @@ namespace Tetris
             Game_Start();
         }
 
-        private void DrawColoredSquare(object sender, PaintEventArgs e)
-        {
-            Graphics g = e.Graphics;
+        //private void Random_Block()
+        //{
+        //    switch (this.random.Next(0, 6))
+        //    {
+        //        case 0: this.currentBlock = new TBlock(); break;
+        //        case 1: this.currentBlock = new OBlock(); break;
+        //        case 2: this.currentBlock = new SBlock(); break;
+        //        case 3: this.currentBlock = new ZBlock(); break;
+        //        case 4: this.currentBlock = new JBlock(); break;
+        //        case 5: this.currentBlock = new LBlock(); break;
+        //        case 6: this.currentBlock = new IBlock(); break;
+        //    }
 
-            g.FillRectangle(Brushes.Black, 40, 40, 32, 32);
-            g.FillRectangle(Brushes.DarkKhaki, 43, 43, 26, 26);
-            g.FillRectangle(Brushes.Black, 46, 46, 20, 20);
-        }
-
-            private void Random_Block()
-        {
-            switch (this.random.Next(0, 6))
-            {
-                case 0: this.currentBlock = new TBlock(); break;
-                case 1: this.currentBlock = new OBlock(); break;
-                case 2: this.currentBlock = new SBlock(); break;
-                case 3: this.currentBlock = new ZBlock(); break;
-                case 4: this.currentBlock = new JBlock(); break;
-                case 5: this.currentBlock = new LBlock(); break;
-                case 6: this.currentBlock = new IBlock(); break;
-            }
-
-            switch (this.random.Next(0, 6))
-            {
-                case 0: this.nextBlock = new TBlock(); break;
-                case 1: this.nextBlock = new OBlock(); break;
-                case 2: this.nextBlock = new SBlock(); break;
-                case 3: this.nextBlock = new ZBlock(); break;
-                case 4: this.nextBlock = new JBlock(); break;
-                case 5: this.nextBlock = new LBlock(); break;
-                case 6: this.nextBlock = new IBlock(); break;
-            }
-        }
+        //    switch (this.random.Next(0, 6))
+        //    {
+        //        case 0: this.nextBlock = new TBlock(); break;
+        //        case 1: this.nextBlock = new OBlock(); break;
+        //        case 2: this.nextBlock = new SBlock(); break;
+        //        case 3: this.nextBlock = new ZBlock(); break;
+        //        case 4: this.nextBlock = new JBlock(); break;
+        //        case 5: this.nextBlock = new LBlock(); break;
+        //        case 6: this.nextBlock = new IBlock(); break;
+        //    }
+        //}
 
         private async void Game_Start()
         {
-            for (int j = 0; j < 8; j++)
+            for (int i = 0; i < 12; i++)
             {
-                this.Game_UpdateBlock();
-                await Task.Delay(500);
+                while (!this.gameField.IsAtBottom(this.currentBlock))
+                {
+                    this.label1.Text = this.gameField.ShowMessageBox();
 
-                BlockMover.MoveDown(this.currentBlock);
-                AddToMatrix();
+                    this.gameField.AddCurrentBlockToGameField(this.currentBlock);
+
+                    this.label1.Text = this.gameField.ShowMessageBox();
+
+                    await Task.Delay(1000);
+
+                    this.label1.Text = this.gameField.ShowMessageBox();
+
+                    this.gameField.DeletePreviousBlockFromGameField();
+                    BlockMover.MoveDown(this.currentBlock);
+
+                    this.label1.Text = this.gameField.ShowMessageBox();
+                }
+
+                //this.Game_UpdateField();
+
+                this.gameField.SetPreviousBlockStaticToGameField(this.currentBlock);
+                this.currentBlock = new TBlock();
             }
         }
 
-        private bool AddToMatrix()
+        private void Game_UpdateField()
         {
-            for (int i = 0; i < 4; i++)
+            for (int i = this.Controls.Count - 1; i >= 0; i--) // удаление всех PictureBox
             {
-                for (int j = 0; j < 4; j++)
+                if (this.Controls[i] is PictureBox pictureBox)
                 {
-                    this.gameField[this.currentBlock.currentPositions[i].X / 30, this.currentBlock.currentPositions[i].Y / 30] = false;
-                    //MessageBox.Show($"{this.currentBlock.currentPositions[i].X / 30} | {this.currentBlock.currentPositions[i].Y / 30}");
+                    this.Controls.RemoveAt(i);
                 }
             }
 
-            return true;
-        }
-
-        private async void Game_UpdateBlock()
-        {
-            this.Controls.Clear();
-
-            for (int i = 0; i < 4; i++)
+            for (byte i = 1; i < gameField.gameField.GetLength(0); i++)
             {
-                PictureBox pictureBoxBlock = new PictureBox()
+                for (byte j = 0; j < gameField.gameField.GetLength(1); j++)
                 {
-                    Image = Properties.Resources.Block,
-                    Size = new Size(30, 30),
-                    Location = this.currentBlock.currentPositions[i],
-                    BackColor = Color.FromArgb(0, 0, 0, 0) // чтобы фон был прозрачным у pictureBox
-                };
+                    if (gameField.gameField[i, j] == 1)
+                    {
+                        PictureBox pictureBoxBlock = new PictureBox()
+                        {
+                            Image = Properties.Resources.Block,
+                            Size = new Size(30, 30),
+                            Location = new Point(j * 30 + 21, i * 30 - (i == 0 ? 0 : 6)), // тут такая фигня нужна, чтобы первый кубик блока не отрисовывался, так как он типа вне поля
+                            BackColor = Color.FromArgb(0, 0, 0, 0) // чтобы фон был прозрачным у pictureBox
+                        };
 
-                //MessageBox.Show($"{this.currentBlock.currentPositions[i]}");
+                        this.Controls.Add(pictureBoxBlock);
+                        this.Refresh();
+                    }
+                }
+            }
+        }
+        private void Game_UpdateBlock()
+        {
+            for (int i = this.Controls.Count - 1; i >= 0; i--) // удаление всех PictureBox
+            {
+                if (this.Controls[i] is PictureBox pictureBox)
+                {
+                    this.Controls.RemoveAt(i);
+                }
+            }
 
-                this.Controls.Add(pictureBoxBlock);
-                this.Refresh();
+            for (byte i = 1; i < gameField.gameField.GetLength(0); i++)
+            {
+                for (byte j = 0; j < gameField.gameField.GetLength(1); j++)
+                {
+                    if (gameField.gameField[i, j] == 2)
+                    {
+                        PictureBox pictureBoxBlock = new PictureBox()
+                        {
+                            Image = Properties.Resources.Block,
+                            Size = new Size(30, 30),
+                            Location = new Point(j * 30 + 21, i * 30 - (i == 0 ? 0 : 6)), // тут такая фигня нужна, чтобы первый кубик блока не отрисовывался, так как он типа вне поля
+                            BackColor = Color.FromArgb(0, 0, 0, 0) // чтобы фон был прозрачным у pictureBox
+                        };
+
+                        this.Controls.Add(pictureBoxBlock);
+                        this.Refresh();
+                    }
+                }
             }
         }
 
-        private async void Game_KeyDown(object sender, KeyEventArgs e)
+
+        private void Game_KeyDown(object sender, KeyEventArgs e)
         {
             switch (e.KeyCode)
             {
-                case Keys.Up: BlockMover.Rotate(this.currentBlock); this.Game_UpdateBlock(); break;
-                case Keys.Down: BlockMover.MoveDown(this.currentBlock); this.Game_UpdateBlock(); break;
-                case Keys.Left: BlockMover.MoveLeft(this.currentBlock); this.Game_UpdateBlock(); break;
-                case Keys.Right: BlockMover.MoveRight(this.currentBlock); this.Game_UpdateBlock(); break;
+                //case Keys.Up: BlockMover.Rotate(this.currentBlock); this.Game_UpdateBlock(); break;
+                case Keys.Down: BlockMover.MoveDown(this.currentBlock); this.gameField.AddCurrentBlockToGameField(this.currentBlock); this.gameField.DeletePreviousBlockFromGameField(); /*this.Game_UpdateBlock();*/ break;
+                case Keys.Left: BlockMover.MoveLeft(this.currentBlock); this.gameField.AddCurrentBlockToGameField(this.currentBlock); this.gameField.DeletePreviousBlockFromGameField(); /*this.Game_UpdateBlock();*/ break;
+                case Keys.Right: BlockMover.MoveRight(this.currentBlock); this.gameField.AddCurrentBlockToGameField(this.currentBlock); this.gameField.DeletePreviousBlockFromGameField(); /*this.Game_UpdateBlock();*/ break;
             }
-   
-            //await Task.Delay(1000);
+        }
+
+        private void pictureBox1_Click(object sender, EventArgs e)
+        {
 
         }
     }
