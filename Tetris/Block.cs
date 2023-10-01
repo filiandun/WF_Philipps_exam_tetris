@@ -40,7 +40,7 @@ namespace Tetris
             //this.previousX = currentX;
             //this.previousY = currentY;
 
-            this.currentOrientation = 5;
+            this.currentOrientation = 0;
 
             this.blockMatrix = new byte[3, 3];
             for (int i = 0; i < 3; i++)

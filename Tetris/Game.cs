@@ -72,26 +72,14 @@ namespace Tetris
         {
             for (int i = 0; i < 12; i++)
             {
-                while (!this.gameField.IsAtBottom(this.currentBlock))
+                while (!this.gameField.IsAtBottom(this.currentBlock) && !this.gameField.IsAtBlock(this.currentBlock))
                 {
-                    this.label1.Text = this.gameField.ShowMessageBox();
-
-                    this.gameField.AddCurrentBlockToGameField(this.currentBlock);
-
-                    this.label1.Text = this.gameField.ShowMessageBox();
+                    this.gameField.AddCurrentBlockToGameField(this.currentBlock, ref this.label1);
 
                     await Task.Delay(1000);
 
-                    this.label1.Text = this.gameField.ShowMessageBox();
-
-                    this.gameField.DeletePreviousBlockFromGameField();
                     BlockMover.MoveDown(this.currentBlock);
-
-                    this.label1.Text = this.gameField.ShowMessageBox();
                 }
-
-                //this.Game_UpdateField();
-
                 this.gameField.SetPreviousBlockStaticToGameField(this.currentBlock);
                 this.currentBlock = new TBlock();
             }
@@ -163,16 +151,11 @@ namespace Tetris
         {
             switch (e.KeyCode)
             {
-                //case Keys.Up: BlockMover.Rotate(this.currentBlock); this.Game_UpdateBlock(); break;
-                case Keys.Down: BlockMover.MoveDown(this.currentBlock); this.gameField.AddCurrentBlockToGameField(this.currentBlock); this.gameField.DeletePreviousBlockFromGameField(); /*this.Game_UpdateBlock();*/ break;
-                case Keys.Left: BlockMover.MoveLeft(this.currentBlock); this.gameField.AddCurrentBlockToGameField(this.currentBlock); this.gameField.DeletePreviousBlockFromGameField(); /*this.Game_UpdateBlock();*/ break;
-                case Keys.Right: BlockMover.MoveRight(this.currentBlock); this.gameField.AddCurrentBlockToGameField(this.currentBlock); this.gameField.DeletePreviousBlockFromGameField(); /*this.Game_UpdateBlock();*/ break;
+                case Keys.Up: BlockMover.Rotate(this.currentBlock); /*this.Game_UpdateBlock();*/ break;
+                case Keys.Down: BlockMover.MoveDown(this.currentBlock); /*this.Game_UpdateBlock();*/ break;
+                case Keys.Left: BlockMover.MoveLeft(this.currentBlock); /*this.Game_UpdateBlock();*/ break;
+                case Keys.Right: BlockMover.MoveRight(this.currentBlock); /*this.Game_UpdateBlock();*/ break;
             }
-        }
-
-        private void pictureBox1_Click(object sender, EventArgs e)
-        {
-
         }
     }
 }
