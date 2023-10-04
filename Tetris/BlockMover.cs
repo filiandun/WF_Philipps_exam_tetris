@@ -13,28 +13,34 @@ namespace Tetris
     {
         public static void MoveDown(Block block)
         {
-            if (block.currentY <= 19)
+            if (!GameField.IsAtBottom(block)) // ещё нужна проверка, чтобы впереди не было блока
             {
-                //block.previousY = block.currentY;
-                block.currentY++;
-            }    
+                for (int i = 0; i < 4; i++)
+                {
+                    block.blockPoints[i].Y++;
+                }    
+            }
         }
 
         public static void MoveLeft(Block block)
         {
             if (!GameField.IsAtLeftWall(block))
             {
-                //block.previousX = block.currentX;
-                block.currentX--;
+                for (int i = 0; i < 4; i++)
+                {
+                    block.blockPoints[i].X--;
+                }
             }
         }
 
         public static void MoveRight(Block block)
         {
-            if (!GameField.IsAtRightWall(block)/*block.currentX < 10 - block.blockMatrix.GetLength(0)*/)
+            if (!GameField.IsAtRightWall(block))
             {
-                //block.previousX = block.currentX;
-                block.currentX++;
+                for (int i = 0; i < 4; i++)
+                {
+                    block.blockPoints[i].X++;
+                }
             }
         }
 
@@ -49,7 +55,7 @@ namespace Tetris
 
             // ЕДИНСТВЕННЫЙ ВАРИАНТ ДЛЯ ФИКСА, ЭТО УЧИТЫВАТЬ НЕ РАЗМЕРЫ МАТРИЦЫ БЛОКА, А КОНКРЕТНОЕ ЗНАЧЕНИЕ В НЕЙ
 
-            if (block is TBlock) 
+            if (block is TBlock)
             {
                 /* ПОЛОЖЕНИЕ 0:
                  *    0  1  2
@@ -77,15 +83,20 @@ namespace Tetris
                  * 
                 */
 
+
+                /* ТЕРЯЕТСЯ blockPoints[1] после одного круга прокручивания фигуры
+                 * 
+                 * 
+                 
+                 */
+
                 switch (block.currentOrientation) // СТРОЧКИ В CASE НЕ МЕНЯТЬ МЕСТАМИ - СЛОМАЕТСЯ
                 {
                     case 0:
-                        block.blockMatrix = new byte[3, 3];
-                        for (int i = 0; i < 3; i++)
-                        {
-                            block.blockMatrix[i, 1] = 2;
-                        }
-                        block.blockMatrix[1, 0] = 2;
+                        block.blockPoints[2] = block.blockPoints[2];
+                        block.blockPoints[3] = block.blockPoints[0];
+                        block.blockPoints[0] = block.blockPoints[1];
+                        block.blockPoints[1] = new Point(block.blockPoints[2].X, block.blockPoints[2].Y + 1);
 
                         block.currentOrientation = 1;
                         break;
@@ -93,25 +104,20 @@ namespace Tetris
                     case 1:
                         if (!GameField.IsAtRightWall(block))
                         {
-                            block.blockMatrix = new byte[3, 3];
-                            for (int i = 0; i < 3; i++)
-                            {
-                                block.blockMatrix[1, i] = 2;
-                            }
-                            block.blockMatrix[2, 1] = 2;
+                            block.blockPoints[2] = block.blockPoints[2];
+                            block.blockPoints[3] = block.blockPoints[0];
+                            block.blockPoints[0] = block.blockPoints[1];
+                            block.blockPoints[1] = new Point(block.blockPoints[2].X + 1, block.blockPoints[2].Y);
 
                             block.currentOrientation = 2;
                         }
                         break;
 
                     case 2:
-                   
-                        block.blockMatrix = new byte[3, 3];
-                        for (int i = 0; i < 3; i++)
-                        {
-                            block.blockMatrix[i, 1] = 2;
-                        }
-                        block.blockMatrix[1, 2] = 2;
+                        block.blockPoints[2] = block.blockPoints[2];
+                        block.blockPoints[3] = block.blockPoints[0];
+                        block.blockPoints[0] = block.blockPoints[1];
+                        block.blockPoints[1] = new Point(block.blockPoints[2].X + 1, block.blockPoints[2].Y);
 
                         block.currentOrientation = 3;
                         break;
@@ -119,12 +125,10 @@ namespace Tetris
                     case 3:
                         if (!GameField.IsAtLeftWall(block))
                         {
-                            block.blockMatrix = new byte[3, 3];
-                            for (int i = 0; i < 3; i++)
-                            {
-                                block.blockMatrix[1, i] = 2;
-                            }
-                            block.blockMatrix[0, 1] = 2;
+                            block.blockPoints[2] = block.blockPoints[2];
+                            block.blockPoints[3] = block.blockPoints[0];
+                            block.blockPoints[0] = block.blockPoints[1];
+                            block.blockPoints[1] = new Point(block.blockPoints[2].X, block.blockPoints[2].Y - 1);
 
                             block.currentOrientation = 0;
                         }

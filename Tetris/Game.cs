@@ -72,11 +72,11 @@ namespace Tetris
         {
             for (int i = 0; i < 12; i++)
             {
-                while (!this.gameField.IsAtBottom(this.currentBlock) && !this.gameField.IsAtBlock(this.currentBlock))
+                while (!GameField.IsAtBottom(this.currentBlock) && !this.gameField.IsAtBlock(this.currentBlock))
                 {
                     this.gameField.AddCurrentBlockToGameField(this.currentBlock, ref this.label1);
 
-                    await Task.Delay(200);
+                    await Task.Delay(700);
 
                     //BlockMover.MoveDown(this.currentBlock);
                 }

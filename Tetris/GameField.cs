@@ -34,60 +34,47 @@ namespace Tetris
         public void AddCurrentBlockToGameField(Block block, ref Label label)
         {
             this.previousBlock = block;
-            for (int i = 0; i < block.blockMatrix.GetLength(0); i++)
+            foreach (Point partPoint in block.blockPoints)
             {
-                for (int j = 0; j < block.blockMatrix.GetLength(1); j++)
-                {
-                    if (block.blockMatrix[i, j] == 2)
-                    {
-                        this.gameField[block.currentY + i, block.currentX + j] = 2;
-                    }
-                }
+                this.gameField[partPoint.Y, partPoint.X] = 2;
             }
+
             label.Text = ShowMessageBox();
             DeletePreviousBlockFromGameField();
         }
 
         public bool IsAtBlock(Block block)
         {
-            for (int i = 0; i < block.blockMatrix.GetLength(0); i++)
+            foreach (Point partPoint in block.blockPoints)
             {
-                for (int j = 0; j < block.blockMatrix.GetLength(1); j++)
+                if (this.gameField[partPoint.Y, partPoint.X] == 1)
                 {
-                    if (block.blockMatrix[i, j] == 2)
-                    {
-                        if (this.gameField[block.currentY + i, block.currentX + j] == 1)
-                        {
-                            return true;
-                        }
-                    }
+                    block = this.previousBlock;
+                    return true;
                 }
             }
             return false;
         }
 
-        public bool IsAtBottom(Block block)
+        public static bool IsAtBottom(Block block)
         {
-            if (block.currentY > 19)
+            foreach(Point partPoint in block.blockPoints)
             {
-                return true;
+                if (partPoint.Y > 19)
+                {
+                    return true;
+                }
             }
             return false;
         }
 
         public static bool IsAtLeftWall(Block block)
         {
-            for (int i = 0; i < block.blockMatrix.GetLength(0); i++)
+            foreach (Point partPoint in block.blockPoints)
             {
-                for (int j = 0; j < block.blockMatrix.GetLength(1); j++)
+                if (partPoint.X <= 0)
                 {
-                    if (block.blockMatrix[i, j] == 2)
-                    {
-                        if (block.currentX + j <= 0)
-                        {
-                            return true;
-                        }
-                    }
+                    return true;
                 }
             }
             return false;
@@ -95,17 +82,11 @@ namespace Tetris
 
         public static bool IsAtRightWall(Block block)
         {
-            for (int i = 0; i < block.blockMatrix.GetLength(0); i++)
+            foreach (Point partPoint in block.blockPoints)
             {
-                for (int j = 0; j < block.blockMatrix.GetLength(1); j++)
+                if (partPoint.X >= 9)
                 {
-                    if (block.blockMatrix[i, j] == 2)
-                    {
-                        if (block.currentX + j >= 9)
-                        {
-                            return true;
-                        }
-                    }
+                    return true;
                 }
             }
             return false;
@@ -128,41 +109,31 @@ namespace Tetris
             return text;
         }
 
-
         public void DeletePreviousBlockFromGameField()
         {
             if (this.previousBlock != null)
             {
-                byte previousX = this.previousBlock.currentX;
-                byte previousY = this.previousBlock.currentY;
+                //foreach (Point partPoint in this.previousBlock.blockPoints)
+                //{
+                //    this.gameField[partPoint.Y, partPoint.X] = 0;
+                //}
 
-                for (int i = previousY; i < previousY + this.previousBlock.blockMatrix.GetLength(0); i++)
+                for (int i = 0; i < this.gameField.GetLength(0); i++)
                 {
-                    for (int j = previousX; j < previousX + this.previousBlock.blockMatrix.GetLength(1); j++)
+                    for (int j = 0; j < this.gameField.GetLength(1); j++)
                     {
-                        if (this.previousBlock.blockMatrix[i - previousY, j - previousX] == 2)
-                        {
-                            this.gameField[i, j] = 0;
-                        }
+                        this.gameField[i, j] = 0;
                     }
                 }
+
             }
         }
 
         public void SetPreviousBlockStaticToGameField(Block block)
         {
-            byte currentX = block.currentX;
-            byte currentY = block.currentY;
-
-            for (int i = currentY; i < currentY + block.blockMatrix.GetLength(0); i++)
+            foreach (Point partPoint in block.blockPoints)
             {
-                for (int j = currentX; j < currentX + block.blockMatrix.GetLength(0); j++)
-                {
-                    if (block.blockMatrix[i - currentY, j - currentX] == 2)
-                    {
-                        this.gameField[i - 1, j] = 1;
-                    }
-                }
+                this.gameField[partPoint.Y, partPoint.X] = 1;
             }
         }
 
