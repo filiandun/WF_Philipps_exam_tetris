@@ -36,7 +36,7 @@ namespace Tetris
             this.previousBlock = block;
             for (int i = 0; i < block.blockMatrix.GetLength(0); i++)
             {
-                for (int j = 0; j < block.blockMatrix.GetLength(0); j++)
+                for (int j = 0; j < block.blockMatrix.GetLength(1); j++)
                 {
                     if (block.blockMatrix[i, j] == 2)
                     {
@@ -52,7 +52,7 @@ namespace Tetris
         {
             for (int i = 0; i < block.blockMatrix.GetLength(0); i++)
             {
-                for (int j = 0; j < block.blockMatrix.GetLength(0); j++)
+                for (int j = 0; j < block.blockMatrix.GetLength(1); j++)
                 {
                     if (block.blockMatrix[i, j] == 2)
                     {
@@ -71,6 +71,42 @@ namespace Tetris
             if (block.currentY > 19)
             {
                 return true;
+            }
+            return false;
+        }
+
+        public static bool IsAtLeftWall(Block block)
+        {
+            for (int i = 0; i < block.blockMatrix.GetLength(0); i++)
+            {
+                for (int j = 0; j < block.blockMatrix.GetLength(1); j++)
+                {
+                    if (block.blockMatrix[i, j] == 2)
+                    {
+                        if (block.currentX + j <= 0)
+                        {
+                            return true;
+                        }
+                    }
+                }
+            }
+            return false;
+        }
+
+        public static bool IsAtRightWall(Block block)
+        {
+            for (int i = 0; i < block.blockMatrix.GetLength(0); i++)
+            {
+                for (int j = 0; j < block.blockMatrix.GetLength(1); j++)
+                {
+                    if (block.blockMatrix[i, j] == 2)
+                    {
+                        if (block.currentX + j >= 9)
+                        {
+                            return true;
+                        }
+                    }
+                }
             }
             return false;
         }
@@ -102,7 +138,7 @@ namespace Tetris
 
                 for (int i = previousY; i < previousY + this.previousBlock.blockMatrix.GetLength(0); i++)
                 {
-                    for (int j = previousX; j < previousX + this.previousBlock.blockMatrix.GetLength(0); j++)
+                    for (int j = previousX; j < previousX + this.previousBlock.blockMatrix.GetLength(1); j++)
                     {
                         if (this.previousBlock.blockMatrix[i - previousY, j - previousX] == 2)
                         {

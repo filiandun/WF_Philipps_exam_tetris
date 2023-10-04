@@ -42,7 +42,7 @@ namespace Tetris
 
             this.currentOrientation = 0;
 
-            this.blockMatrix = new byte[3, 3];
+            this.blockMatrix = new byte[2, 3];
             for (int i = 0; i < 3; i++)
             {
                 this.blockMatrix[1, i] = 2;
@@ -57,19 +57,26 @@ namespace Tetris
      *    [2][3]   *
     ****************/
 
-    //public class OBlock : Block
-    //{
-    //    public OBlock()
-    //    {
-    //        this.matrixsBlock = new Point[4]
-    //        {
-    //            new Point(141, 24),
-    //            new Point(171, 24),
-    //            new Point(141, 54),
-    //            new Point(171, 54)
-    //        };
-    //    }
-    //}
+    public class OBlock : Block
+    {
+        public OBlock()
+        {
+            this.currentX = 4;
+            this.currentY = 0;
+
+            //this.previousX = currentX;
+            //this.previousY = currentY;
+
+            this.currentOrientation = 0;
+
+            this.blockMatrix = new byte[2, 3];
+            for (int i = 0; i < 3; i++)
+            {
+                this.blockMatrix[1, i] = 2;
+            }
+            this.blockMatrix[0, 1] = 2;
+        }
+    }
 
 
     ///****************

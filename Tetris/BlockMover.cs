@@ -22,7 +22,7 @@ namespace Tetris
 
         public static void MoveLeft(Block block)
         {
-            if (block.currentX > 0)
+            if (!GameField.IsAtLeftWall(block))
             {
                 //block.previousX = block.currentX;
                 block.currentX--;
@@ -31,7 +31,7 @@ namespace Tetris
 
         public static void MoveRight(Block block)
         {
-            if (block.currentX < 10 - block.blockMatrix.GetLength(0))
+            if (!GameField.IsAtRightWall(block)/*block.currentX < 10 - block.blockMatrix.GetLength(0)*/)
             {
                 //block.previousX = block.currentX;
                 block.currentX++;
@@ -59,9 +59,9 @@ namespace Tetris
                  *    
                  * ПОЛОЖЕНИЕ 1:
                  *    0  1  2
-                 * 0 [3][2][1]
-                 * 1    [0]
-                 * 2
+                 * 0 
+                 * 1 [3][2][1]
+                 * 2    [0]
                  * 
                  * ПОЛОЖЕНИЕ 2:
                  *    0  1  2
@@ -91,17 +91,21 @@ namespace Tetris
                         break;
 
                     case 1:
-                        block.blockMatrix = new byte[3, 3];
-                        for (int i = 0; i < 3; i++)
+                        if (!GameField.IsAtRightWall(block))
                         {
-                            block.blockMatrix[0, i] = 2;
-                        }
-                        block.blockMatrix[1, 1] = 2;
+                            block.blockMatrix = new byte[3, 3];
+                            for (int i = 0; i < 3; i++)
+                            {
+                                block.blockMatrix[1, i] = 2;
+                            }
+                            block.blockMatrix[2, 1] = 2;
 
-                        block.currentOrientation = 2;
+                            block.currentOrientation = 2;
+                        }
                         break;
 
                     case 2:
+                   
                         block.blockMatrix = new byte[3, 3];
                         for (int i = 0; i < 3; i++)
                         {
@@ -113,14 +117,17 @@ namespace Tetris
                         break;
 
                     case 3:
-                        block.blockMatrix = new byte[3, 3];
-                        for (int i = 0; i < 3; i++)
+                        if (!GameField.IsAtLeftWall(block))
                         {
-                            block.blockMatrix[1, i] = 2;
-                        }
-                        block.blockMatrix[0, 1] = 2;
+                            block.blockMatrix = new byte[3, 3];
+                            for (int i = 0; i < 3; i++)
+                            {
+                                block.blockMatrix[1, i] = 2;
+                            }
+                            block.blockMatrix[0, 1] = 2;
 
-                        block.currentOrientation = 0;
+                            block.currentOrientation = 0;
+                        }
                         break;
                 }
             }

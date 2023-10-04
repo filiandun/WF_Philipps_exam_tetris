@@ -76,9 +76,9 @@ namespace Tetris
                 {
                     this.gameField.AddCurrentBlockToGameField(this.currentBlock, ref this.label1);
 
-                    await Task.Delay(1000);
+                    await Task.Delay(200);
 
-                    BlockMover.MoveDown(this.currentBlock);
+                    //BlockMover.MoveDown(this.currentBlock);
                 }
                 this.gameField.SetPreviousBlockStaticToGameField(this.currentBlock);
                 this.currentBlock = new TBlock();
