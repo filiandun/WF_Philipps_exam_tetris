@@ -27,12 +27,12 @@ namespace Tetris
             InitializeComponent();
 
             //this.currentBlock = new OBlock(); // READY
-            this.currentBlock = new TBlock();
-            //this.currentBlock = new SBlock(); // READY
-            //this.currentBlock = new ZBlock(); // READY
-            //this.currentBlock = new JBlock(); // READY
-            //this.currentBlock = new LBlock(); // READY
-            //this.currentBlock = new IBlock(); // READY
+            //this.currentBlock = new TBlock(); // READY
+            //this.currentBlock = new SBlock();
+            //this.currentBlock = new ZBlock();
+            //this.currentBlock = new JBlock();
+            //this.currentBlock = new LBlock();
+            this.currentBlock = new IBlock();
 
             //this.Random_Block();
             this.gameField = new GameField();
@@ -72,89 +72,104 @@ namespace Tetris
         {
             for (int i = 0; i < 12; i++)
             {
-                while (!GameField.IsAtBottom(this.currentBlock) && !this.gameField.IsAtBlock(this.currentBlock))
+                while (this.AllIsAt())
                 {
                     this.gameField.AddCurrentBlockToGameField(this.currentBlock, ref this.label1);
 
-                    await Task.Delay(700);
+                    await Task.Delay(100);
 
                     //BlockMover.MoveDown(this.currentBlock);
                 }
+
+                //await Task.Delay(500);
                 this.gameField.SetPreviousBlockStaticToGameField(this.currentBlock);
-                this.currentBlock = new TBlock();
+                
+                //this.currentBlock = new OBlock(); // READY
+                //this.currentBlock = new TBlock(); // READY
+                //this.currentBlock = new SBlock();
+                //this.currentBlock = new ZBlock();
+                //this.currentBlock = new JBlock();
+                //this.currentBlock = new LBlock();
+                this.currentBlock = new IBlock();
             }
         }
 
-        private void Game_UpdateField()
+        private bool AllIsAt()
         {
-            for (int i = this.Controls.Count - 1; i >= 0; i--) // удаление всех PictureBox
-            {
-                if (this.Controls[i] is PictureBox pictureBox)
-                {
-                    this.Controls.RemoveAt(i);
-                }
-            }
-
-            for (byte i = 1; i < gameField.gameField.GetLength(0); i++)
-            {
-                for (byte j = 0; j < gameField.gameField.GetLength(1); j++)
-                {
-                    if (gameField.gameField[i, j] == 1)
-                    {
-                        PictureBox pictureBoxBlock = new PictureBox()
-                        {
-                            Image = Properties.Resources.Block,
-                            Size = new Size(30, 30),
-                            Location = new Point(j * 30 + 21, i * 30 - (i == 0 ? 0 : 6)), // тут такая фигня нужна, чтобы первый кубик блока не отрисовывался, так как он типа вне поля
-                            BackColor = Color.FromArgb(0, 0, 0, 0) // чтобы фон был прозрачным у pictureBox
-                        };
-
-                        this.Controls.Add(pictureBoxBlock);
-                        this.Refresh();
-                    }
-                }
-            }
-        }
-        private void Game_UpdateBlock()
-        {
-            for (int i = this.Controls.Count - 1; i >= 0; i--) // удаление всех PictureBox
-            {
-                if (this.Controls[i] is PictureBox pictureBox)
-                {
-                    this.Controls.RemoveAt(i);
-                }
-            }
-
-            for (byte i = 1; i < gameField.gameField.GetLength(0); i++)
-            {
-                for (byte j = 0; j < gameField.gameField.GetLength(1); j++)
-                {
-                    if (gameField.gameField[i, j] == 2)
-                    {
-                        PictureBox pictureBoxBlock = new PictureBox()
-                        {
-                            Image = Properties.Resources.Block,
-                            Size = new Size(30, 30),
-                            Location = new Point(j * 30 + 21, i * 30 - (i == 0 ? 0 : 6)), // тут такая фигня нужна, чтобы первый кубик блока не отрисовывался, так как он типа вне поля
-                            BackColor = Color.FromArgb(0, 0, 0, 0) // чтобы фон был прозрачным у pictureBox
-                        };
-
-                        this.Controls.Add(pictureBoxBlock);
-                        this.Refresh();
-                    }
-                }
-            }
+            return !GameField.IsAtBottom(this.currentBlock) && !this.gameField.IsAtBlockDown(this.currentBlock);
         }
 
+        //private void Game_UpdateField()
+        //{
+        //    for (int i = this.Controls.Count - 1; i >= 0; i--) // удаление всех PictureBox
+        //    {
+        //        if (this.Controls[i] is PictureBox pictureBox)
+        //        {
+        //            this.Controls.RemoveAt(i);
+        //        }
+        //    }
 
-        private void Game_KeyDown(object sender, KeyEventArgs e)
+        //    for (byte i = 1; i < gameField.gameField.GetLength(0); i++)
+        //    {
+        //        for (byte j = 0; j < gameField.gameField.GetLength(1); j++)
+        //        {
+        //            if (gameField.gameField[i, j] == 1)
+        //            {
+        //                PictureBox pictureBoxBlock = new PictureBox()
+        //                {
+        //                    Image = Properties.Resources.Block,
+        //                    Size = new Size(30, 30),
+        //                    Location = new Point(j * 30 + 21, i * 30 - (i == 0 ? 0 : 6)), // тут такая фигня нужна, чтобы первый кубик блока не отрисовывался, так как он типа вне поля
+        //                    BackColor = Color.FromArgb(0, 0, 0, 0) // чтобы фон был прозрачным у pictureBox
+        //                };
+
+        //                this.Controls.Add(pictureBoxBlock);
+        //                this.Refresh();
+        //            }
+        //        }
+        //    }
+        //}
+
+        //private void Game_UpdateBlock()
+        //{
+        //    for (int i = this.Controls.Count - 1; i >= 0; i--) // удаление всех PictureBox
+        //    {
+        //        if (this.Controls[i] is PictureBox pictureBox)
+        //        {
+        //            this.Controls.RemoveAt(i);
+        //        }
+        //    }
+
+        //    for (byte i = 1; i < gameField.gameField.GetLength(0); i++)
+        //    {
+        //        for (byte j = 0; j < gameField.gameField.GetLength(1); j++)
+        //        {
+        //            if (gameField.gameField[i, j] == 2)
+        //            {
+        //                PictureBox pictureBoxBlock = new PictureBox()
+        //                {
+        //                    Image = Properties.Resources.Block,
+        //                    Size = new Size(30, 30),
+        //                    Location = new Point(j * 30 + 21, i * 30 - (i == 0 ? 0 : 6)), // тут такая фигня нужна, чтобы первый кубик блока не отрисовывался, так как он типа вне поля
+        //                    BackColor = Color.FromArgb(0, 0, 0, 0) // чтобы фон был прозрачным у pictureBox
+        //                };
+
+        //                this.Controls.Add(pictureBoxBlock);
+        //                this.Refresh();
+        //            }
+        //        }
+        //    }
+        //}
+
+
+        private void Game_KeyUp(object sender, KeyEventArgs e)
         {
             switch (e.KeyCode)
             {
-                case Keys.Up: BlockMover.Rotate(this.currentBlock); /*this.Game_UpdateBlock();*/ break;
-                case Keys.Down: BlockMover.MoveDown(this.currentBlock); /*this.Game_UpdateBlock();*/ break;
-                case Keys.Left: BlockMover.MoveLeft(this.currentBlock); /*this.Game_UpdateBlock();*/ break;
-                case Keys.Right: BlockMover.MoveRight(this.currentBlock); /*this.Game_UpdateBlock();*/ break;
+                case Keys.Up: if (this.AllIsAt()) { BlockMover.Rotate(this.currentBlock); } /*this.Game_UpdateBlock();*/ break;
+                case Keys.Down: if (!this.gameField.IsAtBlockDown(this.currentBlock)) { BlockMover.MoveDown(this.currentBlock); } /*this.Game_UpdateBlock();*/ break;
+                case Keys.Left: if (!this.gameField.IsAtBlockLeft(this.currentBlock)) { BlockMover.MoveLeft(this.currentBlock); }/*this.Game_UpdateBlock();*/ break;
+                case Keys.Right: if (!this.gameField.IsAtBlockRight(this.currentBlock)) { BlockMover.MoveRight(this.currentBlock); } /*this.Game_UpdateBlock();*/ break;
             }
         }
     }

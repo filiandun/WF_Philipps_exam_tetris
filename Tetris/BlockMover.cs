@@ -24,7 +24,7 @@ namespace Tetris
 
         public static void MoveLeft(Block block)
         {
-            if (!GameField.IsAtLeftWall(block))
+            if (!GameField.IsAtWallLeft(block))
             {
                 for (int i = 0; i < 4; i++)
                 {
@@ -35,7 +35,7 @@ namespace Tetris
 
         public static void MoveRight(Block block)
         {
-            if (!GameField.IsAtRightWall(block))
+            if (!GameField.IsAtWallRight(block))
             {
                 for (int i = 0; i < 4; i++)
                 {
@@ -54,8 +54,12 @@ namespace Tetris
             // 4. В положении 1 - всё нормально
 
             // ЕДИНСТВЕННЫЙ ВАРИАНТ ДЛЯ ФИКСА, ЭТО УЧИТЫВАТЬ НЕ РАЗМЕРЫ МАТРИЦЫ БЛОКА, А КОНКРЕТНОЕ ЗНАЧЕНИЕ В НЕЙ
+            if (block is OBlock)
+            {
+                return;
+            }
 
-            if (block is TBlock)
+            else if (block is TBlock)
             {
                 /* ПОЛОЖЕНИЕ 0:
                  *    0  1  2
@@ -83,13 +87,6 @@ namespace Tetris
                  * 
                 */
 
-
-                /* ТЕРЯЕТСЯ blockPoints[1] после одного круга прокручивания фигуры
-                 * 
-                 * 
-                 
-                 */
-
                 switch (block.currentOrientation) // СТРОЧКИ В CASE НЕ МЕНЯТЬ МЕСТАМИ - СЛОМАЕТСЯ
                 {
                     case 0:
@@ -102,7 +99,7 @@ namespace Tetris
                         break;
 
                     case 1:
-                        if (!GameField.IsAtRightWall(block))
+                        if (!GameField.IsAtWallRight(block))
                         {
                             block.blockPoints[2] = block.blockPoints[2];
                             block.blockPoints[3] = block.blockPoints[0];
@@ -117,18 +114,18 @@ namespace Tetris
                         block.blockPoints[2] = block.blockPoints[2];
                         block.blockPoints[3] = block.blockPoints[0];
                         block.blockPoints[0] = block.blockPoints[1];
-                        block.blockPoints[1] = new Point(block.blockPoints[2].X + 1, block.blockPoints[2].Y);
+                        block.blockPoints[1] = new Point(block.blockPoints[2].X, block.blockPoints[2].Y - 1);
 
                         block.currentOrientation = 3;
                         break;
 
                     case 3:
-                        if (!GameField.IsAtLeftWall(block))
+                        if (!GameField.IsAtWallLeft(block))
                         {
                             block.blockPoints[2] = block.blockPoints[2];
                             block.blockPoints[3] = block.blockPoints[0];
                             block.blockPoints[0] = block.blockPoints[1];
-                            block.blockPoints[1] = new Point(block.blockPoints[2].X, block.blockPoints[2].Y - 1);
+                            block.blockPoints[1] = new Point(block.blockPoints[2].X - 1, block.blockPoints[2].Y);
 
                             block.currentOrientation = 0;
                         }
@@ -136,234 +133,277 @@ namespace Tetris
                 }
             }
 
-            //else if (block is SBlock)
-            //{
-            //    /* ПОЛОЖЕНИЕ 0:
-            //     *    [2][3]
-            //     * [0][1]
-            //     * 
-            //     * ПОЛОЖЕНИЕ 1:
-            //     *    [3]
-            //     *    [2][1]
-            //     *       [0]
-            //    */
+            else if (block is SBlock)
+            {
+                /* ПОЛОЖЕНИЕ 0:
+                 *    0  1  2
+                 * 0 [3]
+                 * 1 [2][1]
+                 * 2    [0]
+                 * 
+                 * ПОЛОЖЕНИЕ 1:
+                 *    0  1  2
+                 * 0    [2][3]
+                 * 1 [0][1]
+                 * 2
+                 * 
+                */
 
-            //    switch (block.currentOrientation) // СТРОЧКИ В CASE НЕ МЕНЯТЬ МЕСТАМИ - СЛОМАЕТСЯ
-            //    {
-            //        case 0:
-            //            block.matrixsBlock[1] = block.matrixsBlock[2];
-            //            block.matrixsBlock[2] = block.matrixsBlock[3];
-            //            block.matrixsBlock[0] = new Point(block.matrixsBlock[1].X - 30, block.matrixsBlock[1].Y);
-            //            block.matrixsBlock[3] = new Point(block.matrixsBlock[2].X + 30, block.matrixsBlock[2].Y);
+                switch (block.currentOrientation) // СТРОЧКИ В CASE НЕ МЕНЯТЬ МЕСТАМИ - СЛОМАЕТСЯ
+                {
+                    case 0:
+                        block.blockPoints[1] = block.blockPoints[1];
+                        block.blockPoints[2] = block.blockPoints[0];
+                        block.blockPoints[3] = new Point(block.blockPoints[2].X, block.blockPoints[2].Y - 1);
+                        block.blockPoints[0] = new Point(block.blockPoints[1].X, block.blockPoints[1].Y + 1);
 
-            //            block.currentOrientation = 1;
-            //            break;
+                        block.currentOrientation = 1;
+                        break;
 
-            //        case 1:
-            //            block.matrixsBlock[3] = block.matrixsBlock[2];
-            //            block.matrixsBlock[2] = block.matrixsBlock[1];
-            //            block.matrixsBlock[1] = new Point(block.matrixsBlock[2].X + 30, block.matrixsBlock[2].Y);
-            //            block.matrixsBlock[0] = new Point(block.matrixsBlock[1].X, block.matrixsBlock[1].Y + 30);
+                    case 1:
+                        if (!GameField.IsAtWallRight(block))
+                        {
+                            block.blockPoints[1] = block.blockPoints[1];
+                            block.blockPoints[0] = block.blockPoints[2];
+                            block.blockPoints[2] = new Point(block.blockPoints[1].X, block.blockPoints[1].Y - 1);
+                            block.blockPoints[3] = new Point(block.blockPoints[2].X + 1, block.blockPoints[2].Y);
 
-            //            block.currentOrientation = 0;
-            //            break;
-            //    }
+                            block.currentOrientation = 0;
+                        }
+                        break;
+                }
+            }
 
-            //}
+            else if (block is ZBlock)
+            {
+                /* ПОЛОЖЕНИЕ 0:
+                 *    0  1  2
+                 * 0    [3]
+                 * 1 [1][2]
+                 * 2 [0]
+                 * 
+                 * ПОЛОЖЕНИЕ 1:
+                 *    0  1  2
+                 * 0 [0][1]
+                 * 1    [2][3]
+                 * 2
+                */
 
-            //else if (block is ZBlock)
-            //{
-            //    /* ПОЛОЖЕНИЕ 0:
-            //     * [0][1]
-            //     *    [2][3]
-            //     * 
-            //     * ПОЛОЖЕНИЕ 1:
-            //     *    [3]
-            //     * [1][2]
-            //     * [0]
-            //    */
+                switch (block.currentOrientation) // СТРОЧКИ В CASE НЕ МЕНЯТЬ МЕСТАМИ - СЛОМАЕТСЯ
+                {
+                    case 0:
+                        block.blockPoints[2] = block.blockPoints[2];
+                        block.blockPoints[3] = block.blockPoints[1];
+                        block.blockPoints[1] = new Point(block.blockPoints[2].X - 1, block.blockPoints[2].Y);
+                        block.blockPoints[0] = new Point(block.blockPoints[1].X, block.blockPoints[1].Y + 1);
 
-            //    switch (block.currentOrientation) // СТРОЧКИ В CASE НЕ МЕНЯТЬ МЕСТАМИ - СЛОМАЕТСЯ
-            //    {
-            //        case 0:
-            //            block.matrixsBlock[1] = block.matrixsBlock[3];
-            //            block.matrixsBlock[2] = block.matrixsBlock[2];
-            //            block.matrixsBlock[0] = new Point(block.matrixsBlock[1].X - 30, block.matrixsBlock[1].Y);
-            //            block.matrixsBlock[3] = new Point(block.matrixsBlock[2].X + 30, block.matrixsBlock[2].Y);
+                        block.currentOrientation = 1;
+                        break;
 
-            //            block.currentOrientation = 1;
-            //            break;
+                    case 1:
+                        if (!GameField.IsAtWallRight(block))
+                        {
+                            block.blockPoints[2] = block.blockPoints[2];
+                            block.blockPoints[1] = block.blockPoints[3];
+                            block.blockPoints[0] = new Point(block.blockPoints[1].X - 1, block.blockPoints[1].Y);
+                            block.blockPoints[3] = new Point(block.blockPoints[2].X + 1, block.blockPoints[2].Y);
 
-            //        case 1:
-            //            block.matrixsBlock[3] = block.matrixsBlock[1];
-            //            block.matrixsBlock[2] = block.matrixsBlock[2];
-            //            block.matrixsBlock[1] = new Point(block.matrixsBlock[2].X - 30, block.matrixsBlock[2].Y);
-            //            block.matrixsBlock[0] = new Point(block.matrixsBlock[1].X, block.matrixsBlock[1].Y + 30);
+                            block.currentOrientation = 0;
+                        }
+                        break;
+                }
+            }
 
-            //            block.currentOrientation = 0;
-            //            break;
-            //    }
+            else if (block is JBlock)
+            {
+                /* ПОЛОЖЕНИЕ 0:
+                 *    0  1  2
+                 * 0    [3]
+                 * 1    [2]
+                 * 2 [0][1]
+                 * 
+                 * ПОЛОЖЕНИЕ 1:
+                 *    0  1  2
+                 * 0 [3][2][1]
+                 * 1       [0]
+                 * 2
+                 * 
+                 * ПОЛОЖЕНИЕ 2:
+                 *    0  1  2
+                 * 0 [1][0]
+                 * 1 [2]
+                 * 2 [3]
+                 * 
+                 * ПОЛОЖЕНИЕ 3:
+                 *    0  1  2
+                 * 0 [0]
+                 * 1 [1][2][3]
+                 * 2
+                */
 
-            //}
+                switch (block.currentOrientation) // СТРОЧКИ В CASE НЕ МЕНЯТЬ МЕСТАМИ - СЛОМАЕТСЯ
+                {
+                    case 0:
+                        block.blockPoints[2] = block.blockPoints[2];
+                        block.blockPoints[3] = new Point(block.blockPoints[2].X, block.blockPoints[2].Y - 1);
+                        block.blockPoints[1] = new Point(block.blockPoints[2].X, block.blockPoints[2].Y + 1);
+                        block.blockPoints[0] = new Point(block.blockPoints[1].X - 1, block.blockPoints[1].Y);
 
-            //else if (block is JBlock)
-            //{
-            //    /* ПОЛОЖЕНИЕ 0:
-            //     * [0]
-            //     * [1][2][3]
-            //     * 
-            //     * ПОЛОЖЕНИЕ 1:
-            //     *    [3]
-            //     *    [2]
-            //     * [0][1]
-            //     * 
-            //     * ПОЛОЖЕНИЕ 2:   
-            //     * [3][2][1]
-            //     *       [0]
-            //     * 
-            //     * ПОЛОЖЕНИЕ 3:
-            //     * [1][0]
-            //     * [2]
-            //     * [3]
-            //    */
+                        block.currentOrientation = 1;
+                        break;
 
-            //    switch (block.currentOrientation) // СТРОЧКИ В CASE НЕ МЕНЯТЬ МЕСТАМИ - СЛОМАЕТСЯ
-            //    {
-            //        case 0:
-            //            block.matrixsBlock[0] = block.matrixsBlock[1];
-            //            block.matrixsBlock[1] = block.matrixsBlock[2];
-            //            block.matrixsBlock[2] = new Point(block.matrixsBlock[1].X + 30, block.matrixsBlock[1].Y);
-            //            block.matrixsBlock[3] = new Point(block.matrixsBlock[2].X + 30, block.matrixsBlock[2].Y);
+                    case 1:
+                        if (!GameField.IsAtWallRight(block))
+                        {
+                            block.blockPoints[2] = block.blockPoints[3];
+                            block.blockPoints[3] = new Point(block.blockPoints[2].X - 1, block.blockPoints[2].Y);
+                            block.blockPoints[1] = new Point(block.blockPoints[2].X + 1, block.blockPoints[2].Y);
+                            block.blockPoints[0] = new Point(block.blockPoints[1].X, block.blockPoints[1].Y + 1);
 
-            //            block.currentOrientation = 1;
-            //            break;
+                            block.currentOrientation = 2;
+                        }
+                        break;
 
-            //        case 1:
-            //            block.matrixsBlock[2] = block.matrixsBlock[2];
-            //            block.matrixsBlock[3] = new Point(block.matrixsBlock[2].X, block.matrixsBlock[2].Y - 30);
-            //            block.matrixsBlock[1] = new Point(block.matrixsBlock[2].X, block.matrixsBlock[2].Y + 30);
-            //            block.matrixsBlock[0] = new Point(block.matrixsBlock[1].X - 30, block.matrixsBlock[1].Y);
+                    case 2:
+                        block.blockPoints[0] = block.blockPoints[2];
+                        block.blockPoints[1] = block.blockPoints[3];
+                        block.blockPoints[2] = new Point(block.blockPoints[1].X, block.blockPoints[1].Y + 1);
+                        block.blockPoints[3] = new Point(block.blockPoints[2].X, block.blockPoints[2].Y + 1);
 
-            //            block.currentOrientation = 2;
-            //            break;
+                        block.currentOrientation = 3;
+                        break;
 
-            //        case 2:
-            //            block.matrixsBlock[2] = block.matrixsBlock[3];
-            //            block.matrixsBlock[3] = new Point(block.matrixsBlock[2].X - 30, block.matrixsBlock[2].Y);
-            //            block.matrixsBlock[1] = new Point(block.matrixsBlock[2].X + 30, block.matrixsBlock[2].Y);
-            //            block.matrixsBlock[0] = new Point(block.matrixsBlock[1].X, block.matrixsBlock[1].Y + 30);
+                    case 3:
+                        if (!GameField.IsAtWallRight(block))
+                        {
+                            block.blockPoints[0] = block.blockPoints[1];
+                            block.blockPoints[1] = block.blockPoints[2];
+                            block.blockPoints[2] = new Point(block.blockPoints[1].X + 1, block.blockPoints[1].Y);
+                            block.blockPoints[3] = new Point(block.blockPoints[2].X + 1, block.blockPoints[2].Y);
 
-            //            block.currentOrientation = 3;
-            //            break;
+                            block.currentOrientation = 0;
+                        }
+                        break;
+                }
+            }
 
-            //        case 3:
-            //            block.matrixsBlock[0] = block.matrixsBlock[2];
-            //            block.matrixsBlock[1] = block.matrixsBlock[3];
-            //            block.matrixsBlock[2] = new Point(block.matrixsBlock[1].X, block.matrixsBlock[1].Y + 30);
-            //            block.matrixsBlock[3] = new Point(block.matrixsBlock[2].X, block.matrixsBlock[2].Y + 30);
+            else if (block is LBlock)
+            {
+                /* ПОЛОЖЕНИЕ 0:
+                 *    0  1  2
+                 * 0 [3][2]
+                 * 1    [1]
+                 * 2    [0]
+                 * 
+                 * ПОЛОЖЕНИЕ 1:
+                 *    0  1  2
+                 * 0 [2][1][0]
+                 * 1 [3]
+                 * 2
+                 *  
+                 * ПОЛОЖЕНИЕ 2:  
+                 *    0  1  2
+                 * 0 [0]
+                 * 1 [1]
+                 * 2 [2][3]
+                 * 
+                 * ПОЛОЖЕНИЕ 3:
+                 *    0  1  2
+                 * 0       [3]
+                 * 1 [0][1][2]
+                 * 2
+                */
 
-            //            block.currentOrientation = 0;
-            //            break;
-            //    }
+                switch (block.currentOrientation) // СТРОЧКИ В CASE НЕ МЕНЯТЬ МЕСТАМИ - СЛОМАЕТСЯ
+                {
+                    case 0:
+                        block.blockPoints[1] = block.blockPoints[1];
+                        block.blockPoints[2] = new Point(block.blockPoints[1].X, block.blockPoints[1].Y - 1);
+                        block.blockPoints[3] = new Point(block.blockPoints[2].X - 1, block.blockPoints[2].Y);
+                        block.blockPoints[0] = new Point(block.blockPoints[1].X, block.blockPoints[1].Y + 1);
 
-            //}
+                        block.currentOrientation = 1;
+                        break;
 
-            //else if (block is LBlock)
-            //{
-            //    /* ПОЛОЖЕНИЕ 0:
-            //     *        [3]
-            //     *  [0][1][2]
-            //     * 
-            //     * ПОЛОЖЕНИЕ 1:
-            //     * [3][2]
-            //     *    [1]
-            //     *    [0]
-            //     * 
-            //     * ПОЛОЖЕНИЕ 2:   
-            //     * [2][1][0]
-            //     * [3]
-            //     * 
-            //     * ПОЛОЖЕНИЕ 3:
-            //     * [0]
-            //     * [1]
-            //     * [2][3]
-            //    */
+                    case 1:
+                        if (!GameField.IsAtWallRight(block))
+                        {
+                            block.blockPoints[1] = block.blockPoints[2];
+                            block.blockPoints[2] = block.blockPoints[3];
+                            block.blockPoints[3] = new Point(block.blockPoints[2].X, block.blockPoints[2].Y + 1);
+                            block.blockPoints[0] = new Point(block.blockPoints[1].X + 1, block.blockPoints[1].Y);
 
-            //    switch (block.currentOrientation) // СТРОЧКИ В CASE НЕ МЕНЯТЬ МЕСТАМИ - СЛОМАЕТСЯ
-            //    {
-            //        case 0:
-            //            block.matrixsBlock[0] = block.matrixsBlock[1];
-            //            block.matrixsBlock[1] = new Point(block.matrixsBlock[0].X + 30, block.matrixsBlock[0].Y);
-            //            block.matrixsBlock[2] = new Point(block.matrixsBlock[1].X + 30, block.matrixsBlock[1].Y);
-            //            block.matrixsBlock[3] = new Point(block.matrixsBlock[2].X, block.matrixsBlock[2].Y - 30);
+                            block.currentOrientation = 2;
+                        }
+                        break;
 
-            //            block.currentOrientation = 1;
-            //            break;
+                    case 2:
+                        block.blockPoints[0] = block.blockPoints[2];
+                        block.blockPoints[1] = block.blockPoints[3];
+                        block.blockPoints[2] = new Point(block.blockPoints[1].X, block.blockPoints[1].Y + 1);
+                        block.blockPoints[3] = new Point(block.blockPoints[2].X + 1, block.blockPoints[2].Y);
 
-            //        case 1:
-            //            block.matrixsBlock[1] = block.matrixsBlock[1];
-            //            block.matrixsBlock[2] = new Point(block.matrixsBlock[1].X, block.matrixsBlock[1].Y - 30);
-            //            block.matrixsBlock[0] = new Point(block.matrixsBlock[1].X, block.matrixsBlock[1].Y + 30);
-            //            block.matrixsBlock[3] = new Point(block.matrixsBlock[2].X - 30, block.matrixsBlock[2].Y);
+                        block.currentOrientation = 3;
+                        break;
 
-            //            block.currentOrientation = 2;
-            //            break;
+                    case 3:
+                        if (!GameField.IsAtWallRight(block))
+                        {
+                            block.blockPoints[0] = block.blockPoints[1];
+                            block.blockPoints[1] = new Point(block.blockPoints[0].X + 1, block.blockPoints[0].Y);
+                            block.blockPoints[2] = new Point(block.blockPoints[1].X + 1, block.blockPoints[1].Y);
+                            block.blockPoints[3] = new Point(block.blockPoints[2].X, block.blockPoints[2].Y - 1);
 
-            //        case 2:
-            //            block.matrixsBlock[1] = block.matrixsBlock[2];
-            //            block.matrixsBlock[2] = block.matrixsBlock[3];
-            //            block.matrixsBlock[0] = new Point(block.matrixsBlock[1].X + 30, block.matrixsBlock[1].Y);
-            //            block.matrixsBlock[3] = new Point(block.matrixsBlock[2].X, block.matrixsBlock[2].Y + 30);
+                            block.currentOrientation = 0;
+                        }
+                        break;
+                }
+            }
 
-            //            block.currentOrientation = 3;
-            //            break;
+            else if (block is IBlock)
+            {
+                /* ПОЛОЖЕНИЕ 0:
+                 *    0  1  2  3
+                 * 0    [0]
+                 * 1    [1]
+                 * 2    [2]
+                 * 3    [3]
+                 *    
+                 * ПОЛОЖЕНИЕ 1:
+                 *    0  1  2  3
+                 * 0
+                 * 1 [0][1][2][3]
+                 * 2
+                 * 3
+                */
 
-            //        case 3:
-            //            block.matrixsBlock[0] = block.matrixsBlock[2];
-            //            block.matrixsBlock[1] = block.matrixsBlock[3];
-            //            block.matrixsBlock[2] = new Point(block.matrixsBlock[1].X, block.matrixsBlock[1].Y + 30);
-            //            block.matrixsBlock[3] = new Point(block.matrixsBlock[2].X + 30, block.matrixsBlock[2].Y);
+                switch (block.currentOrientation) // СТРОЧКИ В CASE НЕ МЕНЯТЬ МЕСТАМИ - СЛОМАЕТСЯ
+                {
+                    case 0:
+                        if (block.blockPoints[3].Y < 18)
+                        {
+                            block.blockPoints[1] = block.blockPoints[1];
+                            block.blockPoints[0] = new Point(block.blockPoints[1].X, block.blockPoints[1].Y - 1);
+                            block.blockPoints[2] = new Point(block.blockPoints[1].X, block.blockPoints[1].Y + 1);
+                            block.blockPoints[3] = new Point(block.blockPoints[2].X, block.blockPoints[2].Y + 1);
 
-            //            block.currentOrientation = 0;
-            //            break;
-            //    }
+                            block.currentOrientation = 1;
+                        }
+                        break;
 
-            //}
+                    case 1:
+                        if (block.blockPoints[1].X < 8 && !GameField.IsAtWallLeft(block)) // тут метод isWallLeft использовать не получится, так как линия при повороте смещается на две единицы по X, а не на одну
+                        {
+                            block.blockPoints[1] = block.blockPoints[1];
+                            block.blockPoints[0] = new Point(block.blockPoints[1].X - 1, block.blockPoints[1].Y);
+                            block.blockPoints[2] = new Point(block.blockPoints[1].X + 1, block.blockPoints[1].Y);
+                            block.blockPoints[3] = new Point(block.blockPoints[2].X + 1, block.blockPoints[2].Y);
 
-            //else if (block is IBlock)
-            //{
-            //    /* ПОЛОЖЕНИЕ 0:
-            //     * 
-            //     * [0][1][2][3]
-            //     * 
-            //     * ПОЛОЖЕНИЕ 1:
-            //     *    [0]
-            //     *    [1]
-            //     *    [2]
-            //     *    [3]
-            //    */
-
-            //    switch (block.currentOrientation) // СТРОЧКИ В CASE НЕ МЕНЯТЬ МЕСТАМИ - СЛОМАЕТСЯ
-            //    {
-            //        case 0:
-            //            block.matrixsBlock[1] = block.matrixsBlock[1];
-            //            block.matrixsBlock[0] = new Point(block.matrixsBlock[1].X - 30, block.matrixsBlock[1].Y);
-            //            block.matrixsBlock[2] = new Point(block.matrixsBlock[1].X + 30, block.matrixsBlock[1].Y);
-            //            block.matrixsBlock[3] = new Point(block.matrixsBlock[2].X + 30, block.matrixsBlock[2].Y);
-
-            //            block.currentOrientation = 1;
-            //            break;
-
-            //        case 1:
-            //            block.matrixsBlock[1] = block.matrixsBlock[1];
-            //            block.matrixsBlock[0] = new Point(block.matrixsBlock[1].X, block.matrixsBlock[1].Y - 30);
-            //            block.matrixsBlock[2] = new Point(block.matrixsBlock[1].X, block.matrixsBlock[1].Y + 30);
-            //            block.matrixsBlock[3] = new Point(block.matrixsBlock[2].X, block.matrixsBlock[2].Y + 30);
-
-            //            block.currentOrientation = 0;
-            //            break;
-            //      }
-            //}
+                            block.currentOrientation = 0;
+                        }
+                        break;
+                }
+            }
         }
     }
 }
