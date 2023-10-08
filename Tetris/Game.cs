@@ -2,6 +2,7 @@
 using System.Drawing;
 using System.Drawing.Text;
 using System.IO;
+using System.Linq;
 using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
@@ -88,7 +89,18 @@ namespace Tetris
             {
                 while (!GameField.IsAtBottom(this.currentBlock) && !this.gameField.IsAtBlockDown(this.currentBlock))
                 {
-                    this.Invalidate();
+                    Point[] points = this.GetRectangleBlock();
+                    this.Invalidate(new Rectangle((points[0].X - 1) * 30 + 21, (points[0].Y - 1) * 30 - 6, (points[1].X - points[0].X + 3) * 30, (points[1].Y - points[0].Y + 3) * 30));
+
+                    //PictureBox pictureBox = new PictureBox()
+                    //{
+                    //    Size = new Size((points[1].X - points[0].X + 3) * 30, (points[1].Y - points[0].Y + 3) * 30),
+                    //    Location = new Point((points[0].X - 1) * 30 + 21, (points[0].Y - 1) * 30 - 6)
+                    //};
+                    //this.Controls.Add(pictureBox);
+                    //await Task.Delay(500);
+                    //this.Controls.Remove(pictureBox);
+
                     this.gameField.AddCurrentBlockToGameField(this.currentBlock, ref this.label1);
                     BlockMover.MoveDown(this.currentBlock); 
                     await Task.Delay(500);
@@ -108,10 +120,10 @@ namespace Tetris
         {
             switch (e.KeyCode)
             {
-                case Keys.Up: if (!GameField.IsAtBottom(this.currentBlock) && !this.gameField.IsAtBlockDown(this.currentBlock)) { BlockMover.Rotate(this.currentBlock); this.gameField.AddCurrentBlockToGameField(this.currentBlock, ref this.label1); this.Refresh(); } break;
-                case Keys.Down: if (!this.gameField.IsAtBlockDown(this.currentBlock)) { BlockMover.MoveDown(this.currentBlock); this.gameField.AddCurrentBlockToGameField(this.currentBlock, ref this.label1); this.Refresh(); } break;
-                case Keys.Left: if (!this.gameField.IsAtBlockLeft(this.currentBlock)) { BlockMover.MoveLeft(this.currentBlock); this.gameField.AddCurrentBlockToGameField(this.currentBlock, ref this.label1); this.Refresh(); } break;
-                case Keys.Right: if (!this.gameField.IsAtBlockRight(this.currentBlock)) { BlockMover.MoveRight(this.currentBlock); this.gameField.AddCurrentBlockToGameField(this.currentBlock, ref this.label1); this.Refresh(); } break;
+                case Keys.Up: if (!GameField.IsAtBottom(this.currentBlock) && !this.gameField.IsAtBlockDown(this.currentBlock)) { BlockMover.Rotate(this.currentBlock); this.gameField.AddCurrentBlockToGameField(this.currentBlock, ref this.label1); Point[] points = this.GetRectangleBlock(); this.Invalidate(new Rectangle((points[0].X - 1) * 30 + 21, (points[0].Y - 1) * 30 - 6, (points[1].X - points[0].X + 3) * 30, (points[1].Y - points[0].Y + 3) * 30)); } break;
+                case Keys.Down: if (!this.gameField.IsAtBlockDown(this.currentBlock)) { BlockMover.MoveDown(this.currentBlock); this.gameField.AddCurrentBlockToGameField(this.currentBlock, ref this.label1); Point[] points = this.GetRectangleBlock(); this.Invalidate(new Rectangle((points[0].X - 1) * 30 + 21, (points[0].Y - 1) * 30 - 6, (points[1].X - points[0].X + 3) * 30, (points[1].Y - points[0].Y + 3) * 30)); } break;
+                case Keys.Left: if (!this.gameField.IsAtBlockLeft(this.currentBlock)) { BlockMover.MoveLeft(this.currentBlock); this.gameField.AddCurrentBlockToGameField(this.currentBlock, ref this.label1); Point[] points = this.GetRectangleBlock(); this.Invalidate(new Rectangle((points[0].X - 1) * 30 + 21, (points[0].Y - 1) * 30 - 6, (points[1].X - points[0].X + 3) * 30, (points[1].Y - points[0].Y + 3) * 30)); } break;
+                case Keys.Right: if (!this.gameField.IsAtBlockRight(this.currentBlock)) { BlockMover.MoveRight(this.currentBlock); this.gameField.AddCurrentBlockToGameField(this.currentBlock, ref this.label1); Point[] points = this.GetRectangleBlock(); this.Invalidate(new Rectangle((points[0].X - 1) * 30 + 21, (points[0].Y - 1) * 30 - 6, (points[1].X - points[0].X + 3) * 30, (points[1].Y - points[0].Y + 3) * 30)); } break;
             }
         }
 
@@ -146,9 +158,12 @@ namespace Tetris
         {
             foreach (Point point in this.currentBlock.blockPoints)
             {
-                if (point.Y > 0) // первый ряд блоков не рисуется
+                if (point.Y > 1) // тут должно быть не 0, а 1
                 {
-                    graphics.DrawImage(image, (point.X * 30) + 21, (point.Y * 30) - 6);
+                    graphics.DrawImage(image, (point.X * 30) + 21, (point.Y * 30) - 36); // а тут должно быть не 6, 36
+                                                                                        // если сделать сделать как нужно, то игрок будет не успеввать засовывать блоки в труднодосупные места
+                                                                                        // и придётся ставить задержку перед зафиксированием блока, а тогда начинаются проблемы с отрисовкой
+                                                                                        // (фигура сквозь другую проходит, но потом становится всё нормально)
                 }
             }
         }
@@ -172,23 +187,42 @@ namespace Tetris
             graphics.DrawString(this.score.GetScore().ToString(), this.scoreFont, Brushes.Black, 365, 25);
         }
 
-        private Point GetRectangleBlock()
+        private Point[] GetRectangleBlock()
         {
-            for (byte i = 0; i < this.gameField.gameField.GetLength(0); i++)
+            byte maxX = (byte) this.currentBlock.blockPoints[0].X;
+            byte maxY = (byte)this.currentBlock.blockPoints[0].Y;
+
+            byte minX = (byte) this.currentBlock.blockPoints[0].X;
+            byte minY = (byte)this.currentBlock.blockPoints[0].Y;
+
+            for (byte i = 0; i < 4; i++)
             {
-                for (byte j = 0; j < this.gameField.gameField.GetLength(1); j++)
+                if (maxX < this.currentBlock.blockPoints[i].X)
                 {
-                    if (this.gameField.gameField[i, j] == 1)
-                    {
-                        //MessageBox.Show($"FIELD {i} : {j}");
-                        return new Point(j, i);
-                    }
+                    maxX = (byte) this.currentBlock.blockPoints[i].X;
+                }
+
+                if (maxY < this.currentBlock.blockPoints[i].Y)
+                {
+                    maxY = (byte)this.currentBlock.blockPoints[i].Y;
+                }
+
+                if (minX > this.currentBlock.blockPoints[i].X)
+                {
+                    minY = (byte)this.currentBlock.blockPoints[i].X;
+                }
+
+                if (minY > this.currentBlock.blockPoints[i].Y)
+                {
+                    minY = (byte)this.currentBlock.blockPoints[i].Y;
                 }
             }
-            return new Point(10, 20);
+
+            //MessageBox.Show($"{minX} : {minY}\n{maxX} : {maxY}");
+            return new Point[] { new Point(minX, minY), new Point(maxX, maxY) };
         }
 
-        private Point GetRectangleField()
+        private byte GetRectangleField()
         {
             for (byte i = 0; i < this.gameField.gameField.GetLength(0); i++)
             {
@@ -196,12 +230,12 @@ namespace Tetris
                 {
                     if (this.gameField.gameField[i, j] == 1)
                     {
-                        //MessageBox.Show($"FIELD {i} : {j}");
-                        return new Point(j, i);
+                        //MessageBox.Show($"FIELD {i}");
+                        return i;
                     }
                 }
             }
-            return new Point(10, 20);
+            return 21;
         }
 
         private void DrawGameOverAnimation(Graphics graphics, Image image)
