@@ -33,6 +33,8 @@ namespace Tetris
 
         public void AddCurrentBlockToGameField(Block block, ref Label label)
         {
+            this.DeleteLine();
+
             foreach (Point partPoint in block.blockPoints)
             {
                 this.gameField[partPoint.Y, partPoint.X] = 2;
@@ -41,7 +43,7 @@ namespace Tetris
             this.previousBlock = block;
             label.Text = ShowMessageBox();
 
-            DeletePreviousBlockFromGameField();
+            this.DeletePreviousBlockFromGameField();
         }
 
         public bool IsAtBlockDown(Block block)
@@ -125,6 +127,43 @@ namespace Tetris
             return false;
         }
 
+        private void DeleteLine()
+        {
+            byte num = 0;
+            byte currentRow = 0;
+
+            for (byte i = 0; i < this.gameField.GetLength(0); i++) 
+            {
+                for (byte j = 0; j < this.gameField.GetLength(1); j++)
+                {
+                    if (this.gameField[i, j] == 1)
+                    {
+                        num++;
+                        currentRow = i;
+                    }
+                }
+                if (num == 10)
+                {
+                    break;
+                }
+                else
+                {
+                    num = 0;
+                }
+            }
+
+            if (num == 10)
+            {
+                for (byte i = currentRow; i > 2; i--)
+                {
+                    for (byte j = 0; j < this.gameField.GetLength(1); j++)
+                    {
+                        this.gameField[i, j] = this.gameField[i - 1, j];
+                    }
+                }
+            }
+        }
+
         public string ShowMessageBox()
         {
             string text = "";
@@ -159,6 +198,19 @@ namespace Tetris
             {
                 this.gameField[partPoint.Y, partPoint.X] = 1;
             }
+        }
+
+
+        public bool CanSpawnBlock()
+        {
+            for (byte j = 0; j < this.gameField.GetLength(1); j++)
+            {
+                if (this.gameField[1, j] == 1)
+                {
+                    return false;
+                }
+            }
+            return true;
         }
 
     }

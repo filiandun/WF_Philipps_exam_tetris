@@ -48,12 +48,6 @@
   <ItemGroup>
     <Compile Include="Block.cs" />
     <Compile Include="BlockMover.cs" />
-    <Compile Include="Form1.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Form1.Designer.cs">
-      <DependentUpon>Form1.cs</DependentUpon>
-    </Compile>
     <Compile Include="Game.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -63,9 +57,7 @@
     <Compile Include="GameField.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <EmbeddedResource Include="Form1.resx">
-      <DependentUpon>Form1.cs</DependentUpon>
-    </EmbeddedResource>
+    <Compile Include="Score.cs" />
     <EmbeddedResource Include="Game.resx">
       <DependentUpon>Game.cs</DependentUpon>
     </EmbeddedResource>
@@ -93,10 +85,14 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="Resources\ScoreFont.TTF" />
+    <None Include="Resources\ScoreFonts.TTF" />
     <None Include="Resources\Фон.png" />
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>
+    <None Include="Resources\BlocksLine.bmp" />
+    <None Include="Resources\Block.bmp" />
     <Content Include="Resources\Block.png" />
     <None Include="Resources\Фон1.png" />
   </ItemGroup>
