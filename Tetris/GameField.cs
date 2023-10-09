@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Drawing.Text;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -33,7 +34,7 @@ namespace Tetris
 
         public void AddCurrentBlockToGameField(Block block, ref Label label)
         {
-            this.DeleteLine();
+            //this.DeleteLine();
 
             foreach (Point partPoint in block.blockPoints)
             {
@@ -127,39 +128,35 @@ namespace Tetris
             return false;
         }
 
-        private void DeleteLine()
+        public void CheckCompletedLine()
         {
             byte num = 0;
-            byte currentRow = 0;
 
-            for (byte i = 0; i < this.gameField.GetLength(0); i++) 
+            foreach (Point point in this.previousBlock.blockPoints)
             {
                 for (byte j = 0; j < this.gameField.GetLength(1); j++)
                 {
-                    if (this.gameField[i, j] == 1)
+                    if (this.gameField[point.Y, j] == 1)
                     {
                         num++;
-                        currentRow = i;
                     }
                 }
+
                 if (num == 10)
                 {
-                    break;
+                    this.DeleteCompletedLine((byte) point.Y);
                 }
-                else
-                {
-                    num = 0;
-                }
+                num = 0;
             }
+        }
 
-            if (num == 10)
+        private void DeleteCompletedLine(byte currentRow)
+        {
+            for (byte i = currentRow; i > 2; i--)
             {
-                for (byte i = currentRow; i > 2; i--)
+                for (byte j = 0; j < this.gameField.GetLength(1); j++)
                 {
-                    for (byte j = 0; j < this.gameField.GetLength(1); j++)
-                    {
-                        this.gameField[i, j] = this.gameField[i - 1, j];
-                    }
+                    this.gameField[i, j] = this.gameField[i - 1, j];
                 }
             }
         }

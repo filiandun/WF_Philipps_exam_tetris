@@ -23,6 +23,9 @@ namespace Tetris
 
         public Font scoreFont;
 
+        private ushort delay;
+
+
         public Game()
         {
             InitializeComponent();
@@ -33,30 +36,39 @@ namespace Tetris
             this.currentBlock = this.GetRandomBlock();
             this.nextBlock = this.GetRandomBlock();
 
-            PrivateFontCollection myfont = new PrivateFontCollection(); // С ЭТОЙ ВСЕЙ РАДОСТЬЮ - КРАШИТ ПРОГРАММУ
-            using (MemoryStream fontStream = new MemoryStream(Properties.Resources.ScoreFont))
-            {
-                var data = Marshal.AllocCoTaskMem((int)fontStream.Length);
-                byte[] fontdata = new byte[fontStream.Length];
-                fontStream.Read(fontdata, 0, (int)fontStream.Length);
-                Marshal.Copy(fontdata, 0, data, (int)fontStream.Length);
-                myfont.AddMemoryFont(data, (int)fontStream.Length);
-                Marshal.FreeCoTaskMem(data);
-            }
-            this.scoreFont = new Font(myfont.Families[0], 40);
+            //PrivateFontCollection myfont = new PrivateFontCollection(); // С ЭТОЙ ВСЕЙ РАДОСТЬЮ - КРАШИТ ПРОГРАММУ
+            //using (MemoryStream fontStream = new MemoryStream(Properties.Resources.ScoreFont))
+            //{
+            //    var data = Marshal.AllocCoTaskMem((int)fontStream.Length);
+            //    byte[] fontdata = new byte[fontStream.Length];
+            //    fontStream.Read(fontdata, 0, (int)fontStream.Length);
+            //    Marshal.Copy(fontdata, 0, data, (int)fontStream.Length);
+            //    myfont.AddMemoryFont(data, (int)fontStream.Length);
+            //    Marshal.FreeCoTaskMem(data);
+            //}
+            //this.scoreFont = new Font(myfont.Families[0], 40);
 
-            myfont.Families[0] = null;
-            myfont.Dispose();
+            //myfont.Families[0] = null;
+            //myfont.Dispose();
 
             this.buttonStart.Enabled = true;
-            this.KeyPreview = false;
         }
 
         private void buttonStart_Click(object sender, EventArgs e)
         {
             this.buttonStart.Enabled = false;
-            this.KeyDown += this.Game_KeyUp;
 
+            this.numericUpDownFirstLine.Enabled = false;
+            this.buttonFirstLevelMinus.Enabled = false;
+            this.buttonFirstLinePlus.Enabled = false;
+
+            this.numericUpDownLevel.Enabled = false;
+            this.buttonLevelMinus.Enabled = false;
+            this.buttonLevelPlus.Enabled = false;
+
+            this.delay = (ushort) (1000 / (this.numericUpDownLevel.Value + 1));
+
+            this.KeyDown += this.Game_KeyUp;
             this.Paint += this.Game_Paint;
 
             this.Game_Start();
@@ -89,13 +101,14 @@ namespace Tetris
             {
                 while (!GameField.IsAtBottom(this.currentBlock) && !this.gameField.IsAtBlockDown(this.currentBlock))
                 {
-                    Point[] points = this.GetRectangleBlock();
-                    this.Invalidate(new Rectangle((points[0].X - 1) * 30 + 21, (points[0].Y - 1) * 30 - 6, (points[1].X - points[0].X + 3) * 30, (points[1].Y - points[0].Y + 3) * 30));
+                    this.Invalidate();
+                    //Point[] points = this.GetRectangleBlock();
+                    //this.Invalidate(new Rectangle((points[0].X - 1) * 30 + 21, (points[0].Y - 2) * 30 - 6, (points[1].X - points[0].X) * 30, (points[1].Y - points[0].Y) * 30));
 
                     //PictureBox pictureBox = new PictureBox()
                     //{
-                    //    Size = new Size((points[1].X - points[0].X + 3) * 30, (points[1].Y - points[0].Y + 3) * 30),
-                    //    Location = new Point((points[0].X - 1) * 30 + 21, (points[0].Y - 1) * 30 - 6)
+                    //    Size = new Size(5 * 30, 4 * 30),
+                    //    Location = new Point((points[0].X - 1) * 30 + 21, (points[0].Y - 2) * 30 - 6)
                     //};
                     //this.Controls.Add(pictureBox);
                     //await Task.Delay(500);
@@ -103,28 +116,34 @@ namespace Tetris
 
                     this.gameField.AddCurrentBlockToGameField(this.currentBlock, ref this.label1);
                     BlockMover.MoveDown(this.currentBlock); 
-                    await Task.Delay(500);
+                    await Task.Delay(this.delay);
                 }
+                this.gameField.SetPreviousBlockStaticToGameField(this.currentBlock);
+                this.gameField.CheckCompletedLine();
+
                 this.Invalidate();
 
-                this.gameField.SetPreviousBlockStaticToGameField(this.currentBlock);
-                
                 this.currentBlock = this.nextBlock;
                 this.nextBlock = this.GetRandomBlock();
 
                 this.score.GetPointsForBlock(ref this.labelScore);
             }
+
+            MessageBox.Show("GAME OVER");
         }
 
         private void Game_KeyUp(object sender, KeyEventArgs e)
         {
             switch (e.KeyCode)
             {
-                case Keys.Up: if (!GameField.IsAtBottom(this.currentBlock) && !this.gameField.IsAtBlockDown(this.currentBlock)) { BlockMover.Rotate(this.currentBlock); this.gameField.AddCurrentBlockToGameField(this.currentBlock, ref this.label1); Point[] points = this.GetRectangleBlock(); this.Invalidate(new Rectangle((points[0].X - 1) * 30 + 21, (points[0].Y - 1) * 30 - 6, (points[1].X - points[0].X + 3) * 30, (points[1].Y - points[0].Y + 3) * 30)); } break;
-                case Keys.Down: if (!this.gameField.IsAtBlockDown(this.currentBlock)) { BlockMover.MoveDown(this.currentBlock); this.gameField.AddCurrentBlockToGameField(this.currentBlock, ref this.label1); Point[] points = this.GetRectangleBlock(); this.Invalidate(new Rectangle((points[0].X - 1) * 30 + 21, (points[0].Y - 1) * 30 - 6, (points[1].X - points[0].X + 3) * 30, (points[1].Y - points[0].Y + 3) * 30)); } break;
-                case Keys.Left: if (!this.gameField.IsAtBlockLeft(this.currentBlock)) { BlockMover.MoveLeft(this.currentBlock); this.gameField.AddCurrentBlockToGameField(this.currentBlock, ref this.label1); Point[] points = this.GetRectangleBlock(); this.Invalidate(new Rectangle((points[0].X - 1) * 30 + 21, (points[0].Y - 1) * 30 - 6, (points[1].X - points[0].X + 3) * 30, (points[1].Y - points[0].Y + 3) * 30)); } break;
-                case Keys.Right: if (!this.gameField.IsAtBlockRight(this.currentBlock)) { BlockMover.MoveRight(this.currentBlock); this.gameField.AddCurrentBlockToGameField(this.currentBlock, ref this.label1); Point[] points = this.GetRectangleBlock(); this.Invalidate(new Rectangle((points[0].X - 1) * 30 + 21, (points[0].Y - 1) * 30 - 6, (points[1].X - points[0].X + 3) * 30, (points[1].Y - points[0].Y + 3) * 30)); } break;
+                case Keys.Up: if (!GameField.IsAtBottom(this.currentBlock) && !this.gameField.IsAtBlockDown(this.currentBlock)) { BlockMover.Rotate(this.currentBlock); } break;
+                case Keys.Down: if (!this.gameField.IsAtBlockDown(this.currentBlock)) { BlockMover.MoveDown(this.currentBlock); } break;
+                case Keys.Left: if (!this.gameField.IsAtBlockLeft(this.currentBlock)) { BlockMover.MoveLeft(this.currentBlock); } break;
+                case Keys.Right: if (!this.gameField.IsAtBlockRight(this.currentBlock)) { BlockMover.MoveRight(this.currentBlock);  } break;
             }
+
+            this.gameField.AddCurrentBlockToGameField(this.currentBlock, ref this.label1);
+            this.Invalidate();
         }
 
 
@@ -141,11 +160,14 @@ namespace Tetris
 
         private void Game_Paint(object sender, PaintEventArgs e)
         {
-            Graphics graphics = Graphics.FromHwnd(this.Handle);
+            //Graphics graphics = Graphics.FromHwnd(this.Handle);
+
+            Graphics graphics = this.CreateGraphics();
             Image image = Properties.Resources.Block1;
 
             //this.DrawScore(graphics);
-            this.DrawBlock(graphics, image);
+            this.DrawNextBlock(graphics, image);
+            this.DrawCurrentBlock(graphics, image);
             this.DrawField(graphics, image);
 
             //image = Properties.Resources.BlocksLine;
@@ -154,17 +176,25 @@ namespace Tetris
             graphics.Dispose();
         }
 
-        private void DrawBlock(Graphics graphics, Image image)
+        private void DrawCurrentBlock(Graphics graphics, Image image)
         {
             foreach (Point point in this.currentBlock.blockPoints)
             {
                 if (point.Y > 1) // тут должно быть не 0, а 1
                 {
-                    graphics.DrawImage(image, (point.X * 30) + 21, (point.Y * 30) - 36); // а тут должно быть не 6, 36
+                    graphics.DrawImage(image, (point.X * 30) + 21, (point.Y * 30) - 36); // а тут должно быть не 6, а 36
                                                                                         // если сделать сделать как нужно, то игрок будет не успеввать засовывать блоки в труднодосупные места
                                                                                         // и придётся ставить задержку перед зафиксированием блока, а тогда начинаются проблемы с отрисовкой
                                                                                         // (фигура сквозь другую проходит, но потом становится всё нормально)
                 }
+            }
+        }
+
+        private void DrawNextBlock(Graphics graphics, Image image)
+        {
+            foreach (Point point in this.nextBlock.blockPoints)
+            {
+                graphics.DrawImage(image, (point.X * 30) + 312, (point.Y * 30) + 437);
             }
         }
 
@@ -190,10 +220,10 @@ namespace Tetris
         private Point[] GetRectangleBlock()
         {
             byte maxX = (byte) this.currentBlock.blockPoints[0].X;
-            byte maxY = (byte)this.currentBlock.blockPoints[0].Y;
+            byte maxY = (byte) this.currentBlock.blockPoints[0].Y;
 
             byte minX = (byte) this.currentBlock.blockPoints[0].X;
-            byte minY = (byte)this.currentBlock.blockPoints[0].Y;
+            byte minY = (byte) this.currentBlock.blockPoints[0].Y;
 
             for (byte i = 0; i < 4; i++)
             {
@@ -218,24 +248,8 @@ namespace Tetris
                 }
             }
 
-            //MessageBox.Show($"{minX} : {minY}\n{maxX} : {maxY}");
+            MessageBox.Show($"{minX} : {minY}\n{maxX} : {maxY}");
             return new Point[] { new Point(minX, minY), new Point(maxX, maxY) };
-        }
-
-        private byte GetRectangleField()
-        {
-            for (byte i = 0; i < this.gameField.gameField.GetLength(0); i++)
-            {
-                for (byte j = 0; j < this.gameField.gameField.GetLength(1); j++)
-                {
-                    if (this.gameField.gameField[i, j] == 1)
-                    {
-                        //MessageBox.Show($"FIELD {i}");
-                        return i;
-                    }
-                }
-            }
-            return 21;
         }
 
         private void DrawGameOverAnimation(Graphics graphics, Image image)
@@ -250,5 +264,38 @@ namespace Tetris
             Thread.Sleep(500);
         }
 
+
+
+        private void buttonFirstLinePlus_Click(object sender, EventArgs e)
+        {
+            if (this.numericUpDownFirstLine.Value < 10)
+            {
+                this.numericUpDownFirstLine.Value++;
+            }
+        }
+
+        private void buttonFirstLevelMinus_Click(object sender, EventArgs e)
+        {
+            if (this.numericUpDownFirstLine.Value > 0)
+            {
+                this.numericUpDownFirstLine.Value--;
+            }
+        }
+
+        private void buttonLevelPlus_Click(object sender, EventArgs e)
+        {
+            if (this.numericUpDownLevel.Value < 6)
+            {
+                this.numericUpDownLevel.Value++;
+            }
+        }
+
+        private void buttonLevelMinus_Click(object sender, EventArgs e)
+        {
+            if (this.numericUpDownLevel.Value > 0)
+            {
+                this.numericUpDownLevel.Value--;
+            }
+        }
     }
 }

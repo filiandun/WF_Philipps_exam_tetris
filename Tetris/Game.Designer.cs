@@ -33,6 +33,14 @@
             this.buttonMute = new System.Windows.Forms.Button();
             this.buttonStart = new System.Windows.Forms.Button();
             this.labelScore = new System.Windows.Forms.Label();
+            this.buttonLevelPlus = new System.Windows.Forms.Button();
+            this.buttonFirstLinePlus = new System.Windows.Forms.Button();
+            this.buttonFirstLevelMinus = new System.Windows.Forms.Button();
+            this.buttonLevelMinus = new System.Windows.Forms.Button();
+            this.numericUpDownLevel = new System.Windows.Forms.NumericUpDown();
+            this.numericUpDownFirstLine = new System.Windows.Forms.NumericUpDown();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownLevel)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownFirstLine)).BeginInit();
             this.SuspendLayout();
             // 
             // label1
@@ -83,18 +91,90 @@
             this.labelScore.AutoSize = true;
             this.labelScore.BackColor = System.Drawing.Color.White;
             this.labelScore.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.labelScore.Location = new System.Drawing.Point(365, 25);
+            this.labelScore.Location = new System.Drawing.Point(444, 84);
             this.labelScore.Name = "labelScore";
             this.labelScore.Size = new System.Drawing.Size(35, 13);
             this.labelScore.TabIndex = 4;
             this.labelScore.Text = "label2";
+            // 
+            // buttonLevelPlus
+            // 
+            this.buttonLevelPlus.Location = new System.Drawing.Point(361, 317);
+            this.buttonLevelPlus.Name = "buttonLevelPlus";
+            this.buttonLevelPlus.Size = new System.Drawing.Size(29, 23);
+            this.buttonLevelPlus.TabIndex = 7;
+            this.buttonLevelPlus.Text = "+";
+            this.buttonLevelPlus.UseVisualStyleBackColor = true;
+            this.buttonLevelPlus.Click += new System.EventHandler(this.buttonLevelPlus_Click);
+            // 
+            // buttonFirstLinePlus
+            // 
+            this.buttonFirstLinePlus.Location = new System.Drawing.Point(361, 197);
+            this.buttonFirstLinePlus.Name = "buttonFirstLinePlus";
+            this.buttonFirstLinePlus.Size = new System.Drawing.Size(29, 23);
+            this.buttonFirstLinePlus.TabIndex = 8;
+            this.buttonFirstLinePlus.Text = "+";
+            this.buttonFirstLinePlus.UseVisualStyleBackColor = true;
+            this.buttonFirstLinePlus.Click += new System.EventHandler(this.buttonFirstLinePlus_Click);
+            // 
+            // buttonFirstLevelMinus
+            // 
+            this.buttonFirstLevelMinus.Location = new System.Drawing.Point(525, 198);
+            this.buttonFirstLevelMinus.Name = "buttonFirstLevelMinus";
+            this.buttonFirstLevelMinus.Size = new System.Drawing.Size(29, 23);
+            this.buttonFirstLevelMinus.TabIndex = 9;
+            this.buttonFirstLevelMinus.Text = "-";
+            this.buttonFirstLevelMinus.UseVisualStyleBackColor = true;
+            this.buttonFirstLevelMinus.Click += new System.EventHandler(this.buttonFirstLevelMinus_Click);
+            // 
+            // buttonLevelMinus
+            // 
+            this.buttonLevelMinus.Location = new System.Drawing.Point(525, 317);
+            this.buttonLevelMinus.Name = "buttonLevelMinus";
+            this.buttonLevelMinus.Size = new System.Drawing.Size(29, 23);
+            this.buttonLevelMinus.TabIndex = 10;
+            this.buttonLevelMinus.Text = "-";
+            this.buttonLevelMinus.UseVisualStyleBackColor = true;
+            this.buttonLevelMinus.Click += new System.EventHandler(this.buttonLevelMinus_Click);
+            // 
+            // numericUpDownLevel
+            // 
+            this.numericUpDownLevel.Location = new System.Drawing.Point(417, 317);
+            this.numericUpDownLevel.Maximum = new decimal(new int[] {
+            6,
+            0,
+            0,
+            0});
+            this.numericUpDownLevel.Name = "numericUpDownLevel";
+            this.numericUpDownLevel.ReadOnly = true;
+            this.numericUpDownLevel.Size = new System.Drawing.Size(80, 20);
+            this.numericUpDownLevel.TabIndex = 11;
+            // 
+            // numericUpDownFirstLine
+            // 
+            this.numericUpDownFirstLine.Location = new System.Drawing.Point(417, 197);
+            this.numericUpDownFirstLine.Maximum = new decimal(new int[] {
+            10,
+            0,
+            0,
+            0});
+            this.numericUpDownFirstLine.Name = "numericUpDownFirstLine";
+            this.numericUpDownFirstLine.ReadOnly = true;
+            this.numericUpDownFirstLine.Size = new System.Drawing.Size(80, 20);
+            this.numericUpDownFirstLine.TabIndex = 12;
             // 
             // Game
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackgroundImage = global::Tetris.Properties.Resources.Фон;
-            this.ClientSize = new System.Drawing.Size(875, 650);
+            this.ClientSize = new System.Drawing.Size(807, 650);
+            this.Controls.Add(this.numericUpDownFirstLine);
+            this.Controls.Add(this.numericUpDownLevel);
+            this.Controls.Add(this.buttonLevelMinus);
+            this.Controls.Add(this.buttonFirstLevelMinus);
+            this.Controls.Add(this.buttonFirstLinePlus);
+            this.Controls.Add(this.buttonLevelPlus);
             this.Controls.Add(this.labelScore);
             this.Controls.Add(this.buttonStart);
             this.Controls.Add(this.buttonMute);
@@ -103,6 +183,8 @@
             this.Name = "Game";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Game";
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownLevel)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownFirstLine)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -115,5 +197,11 @@
         private System.Windows.Forms.Button buttonMute;
         private System.Windows.Forms.Button buttonStart;
         private System.Windows.Forms.Label labelScore;
+        private System.Windows.Forms.Button buttonLevelPlus;
+        private System.Windows.Forms.Button buttonFirstLinePlus;
+        private System.Windows.Forms.Button buttonFirstLevelMinus;
+        private System.Windows.Forms.Button buttonLevelMinus;
+        private System.Windows.Forms.NumericUpDown numericUpDownLevel;
+        private System.Windows.Forms.NumericUpDown numericUpDownFirstLine;
     }
 }
